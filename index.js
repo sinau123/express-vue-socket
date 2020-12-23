@@ -10,25 +10,18 @@ const io = require('socket.io')(server, {
 })
 const bodyParser = require('body-parser')
 
+const postRouter = require('./post')(io)
+
 app.use(cors())
 
 // parse application/json
 app.use(bodyParser.json())
 
-const posts = []
 app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>')
 })
 
-app.get('/post/list', (req, res) => {
-  res.send(posts)
-})
-
-app.post('/post/create', (req, res) => {
-  posts.push(req.body.data)
-  io.emit('newData', req.body.data)
-  res.send(posts)
-})
+app.use('/post', postRouter)
 
 io.on('connection', (socket) => {
   console.log('a user connected')
